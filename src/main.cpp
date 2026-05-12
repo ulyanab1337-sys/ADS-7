@@ -1,3 +1,4 @@
+// Copyright 2026 NNTU-CS
 #include <iostream>
 #include <fstream>
 #include <vector>
