@@ -1,3 +1,4 @@
+// Copyright 2026 NNTU-CS
 #include "train.h"
 
 Train::Train() : countOp(0), first(nullptr) {}
@@ -38,6 +39,7 @@ int Train::getLength() {
     Car *current = first;
 
     current->light = false;
+    int counter = 0;
     int steps = 0;
 
     while (true) {
@@ -48,19 +50,26 @@ int Train::getLength() {
         if (current->light) {
             current->light = false;
             steps = 0;
-        } else if (steps > 0) {
-            bool allOff = true;
-            const Car *temp = current;
-            for (int i = 0; i < steps; i++) {
-                temp = temp->prev;
-                countOp++;
-                if (temp->light) {
-                    allOff = false;
-                    break;
+            counter = 0;
+        } else {
+            if (steps > 0) {
+                counter++;
+                if (counter == steps) {
+                    const Car *temp = current;
+                    bool allOff = true;
+                    for (int i = 0; i < steps; i++) {
+                        temp = temp->prev;
+                        countOp++;
+                        if (temp->light) {
+                            allOff = false;
+                            break;
+                        }
+                    }
+                    if (allOff) {
+                        return steps;
+                    }
+                    counter = 0;
                 }
-            }
-            if (allOff) {
-                return steps;
             }
         }
     }
