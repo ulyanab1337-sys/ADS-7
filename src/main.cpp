@@ -1,4 +1,3 @@
-// Copyright 2026 NNTU-CS
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -10,7 +9,7 @@ int runExperiment(int n, const std::vector<bool>& lights) {
     for (int i = 0; i < n; i++) {
         train.addCar(lights[i]);
     }
-    train.getLength();
+    int len = train.getLength();
     return train.getOpCount();
 }
 
