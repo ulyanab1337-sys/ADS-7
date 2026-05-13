@@ -37,10 +37,10 @@ int Train::getLength() {
     if (!first) return 0;
     countOp = 0;
     Car *current = first;
-    current->light = true;
-    int counter = 1;
+    current->light = false;
+    int length = 1;
     while (true) {
-        for (int i = 0; i < counter; i++) {
+        for (int i = 0; i < length; i++) {
             current = current->next;
             countOp++;
         }
@@ -48,7 +48,7 @@ int Train::getLength() {
             current->light = true;
             const Car *temp = current;
             bool allOff = true;
-            for (int i = 0; i < counter; i++) {
+            for (int i = 0; i < length; i++) {
                 temp = temp->prev;
                 countOp++;
                 if (temp->light) {
@@ -57,12 +57,20 @@ int Train::getLength() {
                 }
             }
             if (allOff) {
-                return counter;
+                return length;
             }
-            counter = 1;
+            length = 1;
+            current = first;
+            current->light = false;
+            for (int i = 0; i < length; i++) {
+                current = current->next;
+                countOp++;
+            }
         } else {
             current->light = false;
-            counter++;
+            length++;
+            current = first;
+            current->light = false;
         }
     }
 }
