@@ -48,16 +48,37 @@ int Train::getLength() {
 
     countOp = 0;
 
-    int length = 1;
+    Car* start = first;
+    start->light = true;
 
-    const Car* current = first->next;
-    countOp++;
+    int len = 1;
 
-    while (current != first) {
-        current = current->next;
-        countOp++;
-        length++;
+    while (true) {
+        Car* current = start;
+
+        for (int i = 0; i < len; i++) {
+            current = current->next;
+            countOp++;
+        }
+
+        if (current->light) {
+            current->light = false;
+
+            Car* check = current;
+
+            for (int i = 0; i < len; i++) {
+                check = check->prev;
+                countOp++;
+            }
+
+            if (check == start) {
+                return len;
+            }
+
+            len = 1;
+        } else {
+            current->light = true;
+            len++;
+        }
     }
-
-    return length;
 }
