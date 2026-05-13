@@ -1,4 +1,3 @@
-// Copyright 2026 NNTU-CS
 #ifndef INCLUDE_TRAIN_H_
 #define INCLUDE_TRAIN_H_
 
