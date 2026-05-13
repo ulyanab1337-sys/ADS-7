@@ -1,53 +1,52 @@
 // Copyright 2021 NNTU-CS
 #include "train.h"
 
-Train::Train() : entryPoint(nullptr), totalMoves(0) {}
+Train::Train() : first(nullptr), countOp(0) {}
 
-int Train::getTotalMoves() {
-    return totalMoves;
+int Train::getOpCount() {
+    return countOp;
 }
 
-void Train::appendWagon(bool bulbState) {
-    Wagon *newWagon = new Wagon;
-    newWagon->bulb = bulbState;
+void Train::addCar(bool light) {
+    Car *newCar = new Car;
+    newCar->light = light;
 
-    if (entryPoint == nullptr) {
-        entryPoint = newWagon;
-        newWagon->nextWagon = newWagon;
-        newWagon->prevWagon = newWagon;
+    if (first == nullptr) {
+        first = newCar;
+        newCar->next = newCar;
+        newCar->prev = newCar;
         return;
     }
 
-    Wagon *lastWagon = entryPoint->prevWagon;
-    newWagon->nextWagon = entryPoint;
-    newWagon->prevWagon = lastWagon;
-
-    lastWagon->nextWagon = newWagon;
-    entryPoint->prevWagon = newWagon;
+    Car *last = first->prev;
+    newCar->next = first;
+    newCar->prev = last;
+    last->next = newCar;
+    first->prev = newCar;
 }
 
-int Train::calcLength() {
-    Wagon *current = entryPoint;
-    current->bulb = true;
+int Train::getLength() {
+    Car *current = first;
+    current->light = true;
 
     while (true) {
-        int stepCount = 0;
+        int steps = 0;
 
         do {
-            current = current->nextWagon;
-            totalMoves++;
-            stepCount++;
-        } while (!current->bulb);
+            current = current->next;
+            countOp++;
+            steps++;
+        } while (!current->light);
 
-        current->bulb = false;
+        current->light = false;
 
-        for (int i = 0; i < stepCount; i++) {
-            current = current->prevWagon;
-            totalMoves++;
+        for (int i = 0; i < steps; i++) {
+            current = current->prev;
+            countOp++;
         }
 
-        if (!current->bulb) {
-            return stepCount;
+        if (!current->light) {
+            return steps;
         }
     }
 }
