@@ -36,35 +36,35 @@ int Train::getOpCount() {
 int Train::getLength() {
     if (!first) return 0;
     countOp = 0;
+    first->light = true;
+    int len = 1;
     Car *current = first;
-    current->light = true;
-    int steps = 1;
     while (true) {
-        for (int i = 0; i < steps; i++) {
+        for (int i = 0; i < len; i++) {
             current = current->next;
             countOp++;
         }
-        if (!current->light) {
-            current->light = true;
-            const Car *temp = current;
-            bool allOff = true;
-            for (int i = 0; i < steps; i++) {
-                temp = temp->prev;
-                countOp++;
-                if (temp->light) {
-                    allOff = false;
-                    break;
-                }
-            }
-            if (allOff) {
-                return steps;
-            }
-            steps++;
-            current = first;
-        } else {
+        if (current->light) {
             current->light = false;
-            steps = 1;
+            len = 1;
             current = first;
+            continue;
         }
+        current->light = true;
+        const Car *temp = current;
+        bool ok = true;
+        for (int i = 0; i < len; i++) {
+            temp = temp->prev;
+            countOp++;
+            if (temp->light) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) {
+            return len;
+        }
+        len++;
+        current = first;
     }
 }
