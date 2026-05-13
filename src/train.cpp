@@ -1,84 +1,53 @@
-// Copyright 2026 NNTU-CS
-
+// Copyright 2021 NNTU-CS
 #include "train.h"
 
-Train::Train() : countOp(0), first(nullptr) {}
+Train::Train() : entryPoint(nullptr), totalMoves(0) {}
 
-Train::~Train() {
-    if (!first) {
+int Train::getTotalMoves() {
+    return totalMoves;
+}
+
+void Train::appendWagon(bool bulbState) {
+    Wagon *newWagon = new Wagon;
+    newWagon->bulb = bulbState;
+
+    if (entryPoint == nullptr) {
+        entryPoint = newWagon;
+        newWagon->nextWagon = newWagon;
+        newWagon->prevWagon = newWagon;
         return;
     }
 
-    Car* current = first;
-    Car* nextCar;
+    Wagon *lastWagon = entryPoint->prevWagon;
+    newWagon->nextWagon = entryPoint;
+    newWagon->prevWagon = lastWagon;
 
-    do {
-        nextCar = current->next;
-        delete current;
-        current = nextCar;
-    } while (current != first);
+    lastWagon->nextWagon = newWagon;
+    entryPoint->prevWagon = newWagon;
 }
 
-void Train::addCar(bool light) {
-    Car* newCar = new Car{light, nullptr, nullptr};
-
-    if (!first) {
-        first = newCar;
-        first->next = first;
-        first->prev = first;
-    } else {
-        Car* last = first->prev;
-
-        last->next = newCar;
-        newCar->prev = last;
-
-        newCar->next = first;
-        first->prev = newCar;
-    }
-}
-
-int Train::getOpCount() {
-    return countOp;
-}
-
-int Train::getLength() {
-    if (!first) {
-        return 0;
-    }
-
-    countOp = 0;
-
-    Car* start = first;
-    start->light = true;
-
-    int len = 1;
+int Train::calcLength() {
+    Wagon *current = entryPoint;
+    current->bulb = true;
 
     while (true) {
-        Car* current = start;
+        int stepCount = 0;
 
-        for (int i = 0; i < len; i++) {
-            current = current->next;
-            countOp++;
+        do {
+            current = current->nextWagon;
+            totalMoves++;
+            stepCount++;
+        } while (!current->bulb);
+
+        current->bulb = false;
+
+        for (int i = 0; i < stepCount; i++) {
+            current = current->prevWagon;
+            totalMoves++;
         }
 
-        if (current->light) {
-            current->light = false;
-
-            Car* check = current;
-
-            for (int i = 0; i < len; i++) {
-                check = check->prev;
-                countOp++;
-            }
-
-            if (check == start) {
-                return len;
-            }
-
-            len = 1;
-        } else {
-            current->light = true;
-            len++;
+        if (!current->bulb) {
+            return stepCount;
         }
     }
 }
