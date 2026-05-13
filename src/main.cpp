@@ -1,4 +1,3 @@
-// src/main.cpp
 // Copyright 2026 NNTU-CS
 #include <iostream>
 #include <fstream>
@@ -11,7 +10,7 @@ int runExperiment(int n, const std::vector<bool>& lights) {
     for (int i = 0; i < n; i++) {
         train.addCar(lights[i]);
     }
-    train.getLength();
+    int length = train.getLength();
     return train.getOpCount();
 }
 
@@ -40,6 +39,9 @@ int main() {
         int opsRandom = runExperiment(n, random);
 
         file << n << "," << opsOff << "," << opsOn << "," << opsRandom << "\n";
+        std::cout << "n=" << n << ": off=" << opsOff 
+                  << ", on=" << opsOn 
+                  << ", random=" << opsRandom << std::endl;
     }
 
     file.close();
