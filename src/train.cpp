@@ -37,29 +37,24 @@ int Train::getLength() {
     if (!first) return 0;
     
     countOp = 0;
+    
     Car *current = first;
-    
     current->light = false;
-    countOp++;
+    int length = 0;
+    bool found = false;
     
-    int steps = 1;
-    bool foundEnd = false;
-    
-    while (!foundEnd) {
-        Car *marker = current;
-        for (int i = 0; i < steps; i++) {
-            marker = marker->next;
+    while (!found) {
+        length++;
+        for (int i = 0; i < length; i++) {
+            current = current->next;
             countOp++;
         }
         
-        if (marker->light) {
-            marker->light = false; 
-            current = marker;
-            steps = 1;
-        } else {
-            Car *temp = marker;
+        if (!current->light) {
+            current->light = true;
+            Car *temp = current;
             bool allOff = true;
-            for (int i = 0; i < steps; i++) {
+            for (int i = 0; i < length; i++) {
                 temp = temp->prev;
                 countOp++;
                 if (temp->light) {
@@ -67,14 +62,14 @@ int Train::getLength() {
                     break;
                 }
             }
-            
             if (allOff) {
-                foundEnd = true;
-            } else {
-                steps++;
+                found = true;
             }
+        } else {
+            current->light = false;
+            length = 0;
         }
     }
     
-    return steps;
+    return length;
 }
