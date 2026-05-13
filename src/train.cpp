@@ -1,4 +1,3 @@
-// src/train.cpp
 // Copyright 2026 NNTU-CS
 #include "train.h"
 
@@ -7,10 +6,11 @@ Train::Train() : countOp(0), first(nullptr) {}
 Train::~Train() {
     if (!first) return;
     Car *current = first;
+    Car *nextCar;
     do {
-        Car *next = current->next;
+        nextCar = current->next;
         delete current;
-        current = next;
+        current = nextCar;
     } while (current != first);
 }
 
@@ -35,43 +35,46 @@ int Train::getOpCount() {
 
 int Train::getLength() {
     if (!first) return 0;
-
+    
     countOp = 0;
     Car *current = first;
-
+    
     current->light = false;
-    int counter = 0;
-    int steps = 0;
-
-    while (true) {
-        current = current->next;
-        countOp++;
-        steps++;
-
-        if (current->light) {
-            current->light = false;
-            steps = 0;
-            counter = 0;
+    countOp++;
+    
+    int steps = 1;
+    bool foundEnd = false;
+    
+    while (!foundEnd) {
+        Car *marker = current;
+        for (int i = 0; i < steps; i++) {
+            marker = marker->next;
+            countOp++;
+        }
+        
+        if (marker->light) {
+            marker->light = false; 
+            current = marker;
+            steps = 1;
         } else {
-            if (steps > 0) {
-                counter++;
-                if (counter == steps) {
-                    const Car *temp = current;
-                    bool allOff = true;
-                    for (int i = 0; i < steps; i++) {
-                        temp = temp->prev;
-                        countOp++;
-                        if (temp->light) {
-                            allOff = false;
-                            break;
-                        }
-                    }
-                    if (allOff) {
-                        return steps;
-                    }
-                    counter = 0;
+            Car *temp = marker;
+            bool allOff = true;
+            for (int i = 0; i < steps; i++) {
+                temp = temp->prev;
+                countOp++;
+                if (temp->light) {
+                    allOff = false;
+                    break;
                 }
+            }
+            
+            if (allOff) {
+                foundEnd = true;
+            } else {
+                steps++;
             }
         }
     }
+    
+    return steps;
 }
