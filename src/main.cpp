@@ -1,46 +1,44 @@
-// Copyright 2026 NNTU-CS
+// Copyright 2022 NNTU-CS
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
-#include <fstream>
-#include <vector>
-#include <random>
 #include "train.h"
 
-int runExperiment(int n, const std::vector<bool>& lights) {
-    Train train;
-    for (int i = 0; i < n; i++) {
-        train.addCar(lights[i]);
-    }
-    train.getLength();
-    return train.getOpCount();
-}
-
 int main() {
-    std::vector<int> sizes = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
-                               120, 140, 160, 180, 200, 250, 300, 350,
-                               400, 450, 500};
+    std::srand(time(nullptr));
 
-    std::ofstream file("result/data.csv");
-    file << "n,all_off,all_on,random\n";
+    std::cout << "n\tall_off\t\tall_on\t\trandom\n";
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, 1);
+    for (int n = 2; n <= 100; n++) {
+        int movesOff, movesOn, movesRand;
 
-    for (int n : sizes) {
-        std::vector<bool> allOff(n, false);
-        std::vector<bool> allOn(n, true);
-        std::vector<bool> random(n);
-        for (int i = 0; i < n; i++) {
-            random[i] = dis(gen);
+        {
+            Train train;
+            for (int i = 0; i < n; i++)
+                train.appendWagon(false);
+            train.calcLength();
+            movesOff = train.getTotalMoves();
         }
 
-        int opsOff = runExperiment(n, allOff);
-        int opsOn = runExperiment(n, allOn);
-        int opsRandom = runExperiment(n, random);
+        {
+            Train train;
+            for (int i = 0; i < n; i++)
+                train.appendWagon(true);
+            train.calcLength();
+            movesOn = train.getTotalMoves();
+        }
 
-        file << n << "," << opsOff << "," << opsOn << "," << opsRandom << "\n";
+        {
+            Train train;
+            for (int i = 0; i < n; i++)
+                train.appendWagon(std::rand() % 2);
+            train.calcLength();
+            movesRand = train.getTotalMoves();
+        }
+
+        std::cout << n << "\t" << movesOff << "\t\t" << movesOn << "\t\t"
+                  << movesRand << "\n";
     }
 
-    file.close();
     return 0;
 }
